@@ -1,0 +1,19 @@
+# Ambiente virtual
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+
+# Editor
+.vscode/*
+!.vscode/settings.json
+
+# Sistema
+.DS_Store
+Thumbs.db
