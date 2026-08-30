@@ -11,6 +11,7 @@ SUPPORTED_EXTENSIONS = (".mp3", ".ogg")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 APP_ICON_PATH = BASE_DIR / "assets" / "icons" / "app_icon.png"
+AUDIO_LOADED_ICON_PATH = BASE_DIR / "assets" / "icons" / "audio_loaded_icon.png"
 
 # Limite de tamanho de arquivo da API de transcrição da Groq.
 MAX_FILE_SIZE_MB = 25
@@ -22,11 +23,11 @@ SETTINGS_FILE = SETTINGS_DIR / "settings.json"
 GROQ_API_KEYS_URL = "https://console.groq.com/keys"
 
 # Paleta de cores do aplicativo
-COLOR_GUNMETAL = "#393d3f"
-COLOR_ALMOND_SILK = "#d5bbb1"
-COLOR_MUTED_TEAL = "#9cc4b2"
-COLOR_OLD_ROSE = "#c98ca7"
-COLOR_BUBBLEGUM_PINK = "#e76d83"
+COLOR_BLACK = "#0a0908"  # fundo principal
+COLOR_JET = "#22333b"  # fundo dos cards/painéis
+COLOR_SMOKE = "#f2f4f3"  # texto principal / alto contraste / destaque
+COLOR_TAUPE = "#a9927d"  # elementos secundários / subtítulos / bordas
+COLOR_BROWN = "#5e503f"  # botão principal
 
 
 @dataclass(frozen=True)

@@ -54,7 +54,8 @@ def transcribe_audio(
     except APIConnectionError as exc:
         raise RuntimeError(
             "Não foi possível conectar à internet para transcrever o áudio. "
-            "Verifique sua conexão e tente novamente."
+            "Verifique sua conexão e tente novamente.\n\n"
+            f"Detalhe técnico: {exc}"
         ) from exc
     except APIStatusError as exc:
         if exc.status_code == 401:
