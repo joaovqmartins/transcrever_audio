@@ -14,13 +14,12 @@ from PySide6.QtCore import (
     QTimer,
     Signal,
 )
-from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent, QPixmap
+from PySide6.QtGui import QDragEnterEvent, QDropEvent, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QComboBox,
     QFileDialog,
     QFrame,
-    QGraphicsDropShadowEffect,
     QGraphicsOpacityEffect,
     QHBoxLayout,
     QLabel,
@@ -135,8 +134,11 @@ class DropArea(QFrame):
             )
         else:
             self.icon_label.setPixmap(upload_pixmap(COLOR_TAUPE, size=44))
-        self.title_label.setText("Arquivo carregado")
-        self.subtitle_label.setText("clique para trocar de arquivo")
+
+        name = os.path.basename(path)
+        elided = name if len(name) <= 42 else name[:39] + "..."
+        self.title_label.setText(elided)
+        self.subtitle_label.setText(f"{human_readable_size(path)} · clique para trocar")
         self.setProperty("hasFile", True)
         _repolish(self)
         self._play_icon_pop()
@@ -213,28 +215,13 @@ class MainWindow(QMainWindow):
 
     # -- construção da interface -------------------------------------------
 
-    def _make_card(self) -> tuple[QFrame, QVBoxLayout]:
-        """Cria um painel com cantos arredondados e sombra suave (profundidade)."""
-        frame = QFrame()
-        frame.setObjectName("card")
-        shadow = QGraphicsDropShadowEffect(frame)
-        shadow.setBlurRadius(28)
-        shadow.setOffset(0, 6)
-        shadow.setColor(QColor(0, 0, 0, 100))
-        frame.setGraphicsEffect(shadow)
-
-        layout = QVBoxLayout(frame)
-        layout.setContentsMargins(16, 14, 16, 14)
-        layout.setSpacing(10)
-        return frame, layout
-
     def _build_ui(self) -> None:
         central = QWidget()
         central.setObjectName("central")
         self.setCentralWidget(central)
         root = QVBoxLayout(central)
-        root.setContentsMargins(24, 20, 24, 20)
-        root.setSpacing(14)
+        root.setContentsMargins(28, 24, 28, 24)
+        root.setSpacing(22)
 
         settings_row = QHBoxLayout()
         settings_row.addStretch()
@@ -262,19 +249,19 @@ class MainWindow(QMainWindow):
         self.drop_area.file_dropped.connect(self._on_file_selected)
         root.addWidget(self.drop_area)
 
-        self.file_info_label = QLabel("Nenhum arquivo selecionado")
-        self.file_info_label.setObjectName("fileInfo")
-        self.file_info_label.setAlignment(Qt.AlignCenter)
-        self.file_info_label.setProperty("hasFile", False)
-        root.addWidget(self.file_info_label)
-
         # -- opções (modelo / idioma) --------------------------------------
-        self.options_card, options_layout = self._make_card()
+        # Contêiner simples (sem fundo/borda/sombra) só para poder esconder o
+        # bloco inteiro quando a transcrição é expandida.
+        self.options_container = QWidget()
+        options_layout = QVBoxLayout(self.options_container)
+        options_layout.setContentsMargins(0, 0, 0, 0)
+        options_layout.setSpacing(6)
 
         options_row = QHBoxLayout()
-        options_row.setSpacing(16)
+        options_row.setSpacing(20)
 
         model_col = QVBoxLayout()
+        model_col.setSpacing(6)
         model_label = QLabel("Modelo")
         model_label.setObjectName("sectionTitle")
         self.model_combo = QComboBox()
@@ -286,6 +273,7 @@ class MainWindow(QMainWindow):
         model_col.addWidget(self.model_combo)
 
         lang_col = QVBoxLayout()
+        lang_col.setSpacing(6)
         lang_label = QLabel("Idioma")
         lang_label.setObjectName("sectionTitle")
         self.language_combo = QComboBox()
@@ -297,15 +285,9 @@ class MainWindow(QMainWindow):
         options_row.addLayout(model_col, stretch=1)
         options_row.addLayout(lang_col, stretch=1)
         options_layout.addLayout(options_row)
-
-        self.model_hint_label = QLabel("")
-        self.model_hint_label.setObjectName("modelHint")
-        self.model_hint_label.setWordWrap(True)
-        self.model_hint_label.setAlignment(Qt.AlignCenter)
-        options_layout.addWidget(self.model_hint_label)
         self._update_model_hint()
 
-        root.addWidget(self.options_card)
+        root.addWidget(self.options_container)
 
         # -- ação principal (transcrever / status / progresso) ------------
         self.transcribe_button = AnimatedButton("Transcrever", glow_color=COLOR_BROWN)
@@ -346,8 +328,6 @@ class MainWindow(QMainWindow):
         self._reveal_chunk = 1
 
         # -- resultado -------------------------------------------------
-        result_card, result_layout = self._make_card()
-
         result_title_row = QHBoxLayout()
         result_title = QLabel("Transcrição")
         result_title.setObjectName("sectionTitle")
@@ -364,15 +344,12 @@ class MainWindow(QMainWindow):
         self.expand_button.clicked.connect(self._toggle_expand)
         result_title_row.addWidget(self.expand_button)
 
-        result_layout.addLayout(result_title_row)
+        root.addLayout(result_title_row)
 
         self.result_text = QTextEdit()
         self.result_text.setReadOnly(True)
         self.result_text.setPlaceholderText("Texto transcrito aparecerá aqui...")
-        # Sem QGraphicsEffect aqui: o card (result_card) já tem sombra própria, e um
-        # QTextEdit com efeito gráfico aninhado sob outro widget com efeito gráfico
-        # causa artefatos de renderização no Qt (texto "flutuando" fora da caixa).
-        result_layout.addWidget(self.result_text, stretch=1)
+        root.addWidget(self.result_text, stretch=1)
 
         actions_row = QHBoxLayout()
         actions_row.addStretch()
@@ -388,9 +365,7 @@ class MainWindow(QMainWindow):
         self.save_button.clicked.connect(self._save_text)
         actions_row.addWidget(self.copy_button)
         actions_row.addWidget(self.save_button)
-        result_layout.addLayout(actions_row)
-
-        root.addWidget(result_card, stretch=1)
+        root.addLayout(actions_row)
 
     # -- animações ----------------------------------------------------------
 
@@ -449,7 +424,7 @@ class MainWindow(QMainWindow):
 
     def _update_model_hint(self) -> None:
         option = MODEL_OPTIONS[self.model_combo.currentIndex()]
-        self.model_hint_label.setText(option.description)
+        self.model_combo.setToolTip(option.description)
 
     def _on_file_selected(self, path: str) -> None:
         if not is_supported_audio(path):
@@ -467,9 +442,6 @@ class MainWindow(QMainWindow):
 
         self.current_file = path
         self.drop_area.show_file(path)
-        self.file_info_label.setText(f"{os.path.basename(path)} ({human_readable_size(path)})")
-        self.file_info_label.setProperty("hasFile", True)
-        _repolish(self.file_info_label)
 
         self.transcribe_button.setEnabled(True)
         self._reveal_timer.stop()
@@ -502,8 +474,7 @@ class MainWindow(QMainWindow):
         self._expanded = not self._expanded
 
         self.drop_area.setVisible(not self._expanded)
-        self.file_info_label.setVisible(not self._expanded)
-        self.options_card.setVisible(not self._expanded)
+        self.options_container.setVisible(not self._expanded)
 
         if self._expanded:
             self.expand_button.setIcon(chevron_icon(COLOR_SMOKE, "up"))

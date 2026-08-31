@@ -28,6 +28,7 @@ def main() -> None:
 
     window = MainWindow()
     window.setWindowIcon(icon)
+    window.resize(560, 780)
     window.show()
     sys.exit(app.exec())
 

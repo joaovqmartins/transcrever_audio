@@ -31,15 +31,10 @@ QLabel#appSubtitle {{
     font-size: 12px;
     color: {COLOR_TAUPE};
 }}
-QFrame#card {{
-    background-color: {COLOR_JET};
-    border: 1px solid rgba(242, 244, 243, 0.06);
-    border-radius: 14px;
-}}
 QFrame#dropArea {{
-    border: 2px dashed {COLOR_TAUPE};
+    border: 1px dashed rgba(169, 146, 125, 0.55);
     border-radius: 14px;
-    background-color: rgba(169, 146, 125, 0.06);
+    background-color: rgba(169, 146, 125, 0.05);
 }}
 QFrame#dropArea:hover {{
     background-color: rgba(169, 146, 125, 0.12);
@@ -72,16 +67,6 @@ QLabel#dropSubtitle {{
     border: none;
     background: transparent;
 }}
-QLabel#fileInfo {{
-    font-size: 12px;
-    color: {COLOR_TAUPE};
-    padding: 3px 12px;
-    border-radius: 10px;
-}}
-QLabel#fileInfo[hasFile="true"] {{
-    background-color: rgba(242, 244, 243, 0.08);
-    border: 1px solid rgba(242, 244, 243, 0.22);
-}}
 QLabel#statusLabel {{
     font-size: 12px;
     min-height: 16px;
@@ -89,10 +74,6 @@ QLabel#statusLabel {{
 QLabel#sectionTitle {{
     font-size: 12px;
     font-weight: 600;
-}}
-QLabel#modelHint {{
-    font-size: 11px;
-    font-style: italic;
     color: {COLOR_TAUPE};
 }}
 QPushButton {{
