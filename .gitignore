@@ -13,6 +13,7 @@ dist/
 # Editor
 .vscode/*
 !.vscode/settings.json
+!.vscode/launch.json
 
 # Sistema
 .DS_Store
