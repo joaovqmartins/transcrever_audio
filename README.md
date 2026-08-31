@@ -53,32 +53,82 @@ transcrever_audio/
 
 ## Requisitos
 
-* Windows 10/11 (também funciona em macOS/Linux)
+* Windows 10/11, Linux ou macOS
 * Python 3.10 ou superior
 * Conexão com a internet (necessária para toda transcrição, não só na primeira execução)
 * Uma chave de API da Groq (gratuita)
+* **No Linux:** as bibliotecas gráficas do Qt (veja [Instalar as dependências](#instalar-as-dependências) abaixo)
 
 ## Instalar o Python
 
+**Windows:**
+
 1. Baixe o instalador em [python.org/downloads](https://www.python.org/downloads/)
    (recomendado: versão 3.11.x ou 3.12.x).
-2. Durante a instalação no Windows, marque a opção **"Add python.exe to PATH"**.
-3. Verifique a instalação:
+2. Durante a instalação, marque a opção **"Add python.exe to PATH"**.
+3. Verifique a instalação num terminal (PowerShell ou cmd):
 
 ```bash
 python --version
 ```
 
-## Instalar as dependências
+**Linux:**
 
-1. (Recomendado) Crie e ative um ambiente virtual dentro da pasta do projeto:
+A maioria das distribuições já vem com Python 3 instalado, mas o pacote de
+ambiente virtual (`venv`) às vezes precisa ser instalado à parte. Exemplo no
+Ubuntu/Debian:
 
 ```bash
-python -m venv venv
-venv\Scripts\activate
+sudo apt update
+sudo apt install python3 python3-venv python3-pip
 ```
 
-2. Instale as dependências:
+Em outras distros, use o gerenciador de pacotes equivalente (`dnf`, `pacman`,
+etc.) para instalar `python3`, `python3-venv`/`python-virtualenv` e `pip`.
+
+Verifique a instalação:
+
+```bash
+python3 --version
+```
+
+> **Atenção:** no Linux e no macOS o comando geralmente é `python3` (não
+> `python`). Sempre que este README disser `python`, use `python3` nesses
+> sistemas.
+
+**macOS:**
+
+```bash
+brew install python
+```
+
+## Instalar as dependências
+
+1. Crie e ative um ambiente virtual **dentro da pasta do projeto** — isso não
+   é opcional: distribuições Linux recentes (Ubuntu 23.04+, Debian 12+)
+   bloqueiam `pip install` fora de um venv por padrão, e é a causa mais comum
+   do erro `ModuleNotFoundError: No module named 'groq'` ao tentar rodar o app.
+
+```bash
+# Windows (PowerShell ou cmd)
+python -m venv venv
+venv\Scripts\activate
+
+# Linux ou macOS
+python3 -m venv venv
+source venv/bin/activate
+```
+
+   Depois de ativado, o início da linha do terminal deve mostrar `(venv)`.
+   Confirme que o `pip` do venv está sendo usado:
+
+```bash
+# Linux/macOS
+which python
+# deve terminar em algo como .../transcrever_audio/venv/bin/python
+```
+
+2. Instale as dependências (com o venv **ainda ativado**):
 
 ```bash
 pip install -r requirements.txt
@@ -88,17 +138,44 @@ Isso instala o **PySide6** (interface gráfica) e o **groq** (cliente oficial
 da API de transcrição). São dependências leves — a instalação é rápida e não
 baixa nenhum modelo de IA para o seu computador.
 
+3. Confirme que as dependências foram instaladas corretamente:
+
+```bash
+python -c "import groq, PySide6; print('OK')"
+```
+
+Se aparecer `ModuleNotFoundError` aqui, o venv não está ativado (repita o
+passo 1) ou a instalação do passo 2 falhou — role a tela para cima e veja se
+o `pip install` mostrou algum erro.
+
+### Bibliotecas gráficas do Qt no Linux
+
+O PySide6 depende de bibliotecas do sistema para abrir janelas (plugin
+`xcb`/Wayland). Se o app não abrir e o erro mencionar `xcb`, `Could not load
+the Qt platform plugin` ou `libEGL`/`libGL`, instale os pacotes do sistema
+(exemplo no Ubuntu/Debian):
+
+```bash
+sudo apt install libxcb-cursor0 libxcb-xinerama0 libgl1
+```
+
+Em outras distros, procure pelo pacote equivalente a `libxcb-cursor0` (ex.:
+`xcb-util-cursor` no Fedora/Arch).
+
 ## Obter uma chave de API da Groq
 
 1. Crie uma conta gratuita em [console.groq.com](https://console.groq.com/).
 2. Acesse [console.groq.com/keys](https://console.groq.com/keys) e clique em
    **Create API Key**.
 3. Copie a chave (começa com `gsk_...`).
-4. Abra o Audio Transcriber, clique em **⚙ Configurações**, cole a chave no
-   campo e clique em **Salvar**.
+4. Abra o Audio Transcriber, clique no ícone de cadeado (🔒) no canto
+   superior direito, cole a chave no campo e clique em **Salvar**.
 
-A chave é salva localmente em `%USERPROFILE%\.audio_transcriber\settings.json`
-— nunca é enviada a nenhum lugar além da própria API da Groq.
+A chave é salva localmente — nunca é enviada a nenhum lugar além da própria
+API da Groq:
+
+* Windows: `%USERPROFILE%\.audio_transcriber\settings.json`
+* Linux/macOS: `~/.audio_transcriber/settings.json`
 
 ## Como executar
 
@@ -151,8 +228,24 @@ nenhuma outra parte do código precisa mudar.
 
 ## Solução de problemas
 
-* **"Nenhuma chave de API da Groq configurada"**: clique em
-  **⚙ Configurações** e informe sua chave (veja
+* **`ModuleNotFoundError: No module named 'groq'`** (ou `PySide6`): o
+  ambiente virtual não está ativado, ou as dependências não foram instaladas
+  nele. No Linux/macOS, rode `source venv/bin/activate` (Windows:
+  `venv\Scripts\activate`) e depois `pip install -r requirements.txt`
+  novamente — confira com `which python` (Linux/macOS) que ele aponta para
+  dentro da pasta `venv`. Veja [Instalar as dependências](#instalar-as-dependências).
+* **`pip install` falha com "externally-managed-environment"** (comum em
+  Ubuntu/Debian recentes): é o sistema bloqueando instalação de pacotes fora
+  de um venv — não use `--break-system-packages`, apenas crie e ative o
+  ambiente virtual como descrito acima antes de instalar.
+* **`command not found: python`** no Linux/macOS: use `python3` no lugar de
+  `python` (o comando `python` sozinho geralmente não existe nessas
+  plataformas).
+* **Erro mencionando `xcb`, `Could not load the Qt platform plugin` ou
+  `libEGL`/`libGL`** no Linux: faltam bibliotecas gráficas do sistema — veja
+  [Bibliotecas gráficas do Qt no Linux](#bibliotecas-gráficas-do-qt-no-linux).
+* **"Nenhuma chave de API da Groq configurada"**: clique no ícone de cadeado
+  e informe sua chave (veja
   [Obter uma chave de API da Groq](#obter-uma-chave-de-api-da-groq)).
 * **"Chave de API inválida ou expirada"**: gere uma nova chave em
   [console.groq.com/keys](https://console.groq.com/keys) e atualize nas
