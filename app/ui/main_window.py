@@ -356,7 +356,6 @@ class MainWindow(QMainWindow):
         self.current_file: Optional[str] = None
         self.worker: Optional[TranscriptionWorker] = None
         self.transcribed_text: str = ""
-        self._fade_played = False
         self._status_base = ""
         self._status_dot_count = 0
         self._expanded = False
@@ -545,18 +544,6 @@ class MainWindow(QMainWindow):
         root.addWidget(result_card, stretch=1)
 
     # -- animações ----------------------------------------------------------
-
-    def showEvent(self, event) -> None:
-        super().showEvent(event)
-        if not self._fade_played:
-            self._fade_played = True
-            self.setWindowOpacity(0.0)
-            self._window_fade_anim = QPropertyAnimation(self, b"windowOpacity", self)
-            self._window_fade_anim.setDuration(320)
-            self._window_fade_anim.setStartValue(0.0)
-            self._window_fade_anim.setEndValue(1.0)
-            self._window_fade_anim.setEasingCurve(QEasingCurve.OutCubic)
-            self._window_fade_anim.start()
 
     def _reveal_text(self, text: str) -> None:
         """Revela o texto transcrito aos poucos, como se estivesse sendo digitado."""
