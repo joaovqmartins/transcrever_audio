@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 from app.config import GROQ_API_KEYS_URL
+from app.ui.style import STYLE_SHEET
 from app.utils.settings import load_api_key, save_api_key
 
 
@@ -22,6 +23,10 @@ class SettingsDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Configurações")
         self.setMinimumWidth(420)
+        # Aplicado explicitamente (não basta herdar do pai): em alguns
+        # ambientes Linux um QDialog não herda o stylesheet da janela pai e
+        # aparece com o tema claro padrão do sistema.
+        self.setStyleSheet(STYLE_SHEET)
 
         layout = QVBoxLayout(self)
         layout.setSpacing(10)
