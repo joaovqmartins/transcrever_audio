@@ -9,12 +9,12 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QPushButton,
     QVBoxLayout,
 )
 
-from app.config import GROQ_API_KEYS_URL
+from app.config import COLOR_INDIGO, COLOR_PANEL, GROQ_API_KEYS_URL
 from app.ui.style import STYLE_SHEET
+from app.ui.widgets import RoundedButton
 from app.utils.settings import load_api_key, save_api_key
 
 
@@ -47,7 +47,9 @@ class SettingsDialog(QDialog):
             self.api_key_input.setText(saved_key)
         layout.addWidget(self.api_key_input)
 
-        self.show_key_button = QPushButton("Mostrar")
+        self.show_key_button = RoundedButton(
+            "Mostrar", bg_color=COLOR_PANEL, hover_color="#1c2129", pressed_color=COLOR_INDIGO, radius=14
+        )
         self.show_key_button.setCheckable(True)
         self.show_key_button.toggled.connect(self._toggle_visibility)
 
@@ -58,10 +60,17 @@ class SettingsDialog(QDialog):
 
         buttons_row = QHBoxLayout()
         buttons_row.addStretch()
-        cancel_button = QPushButton("Cancelar")
+        cancel_button = RoundedButton(
+            "Cancelar", bg_color=COLOR_PANEL, hover_color="#1c2129", pressed_color=COLOR_INDIGO, radius=14
+        )
         cancel_button.clicked.connect(self.reject)
-        save_button = QPushButton("Salvar")
-        save_button.setObjectName("primaryButton")
+        save_button = RoundedButton(
+            "Salvar",
+            bg_color=COLOR_INDIGO,
+            hover_color="#7a7df3",
+            pressed_color="#4f52c1",
+            radius=14,
+        )
         save_button.clicked.connect(self._on_save)
         buttons_row.addWidget(cancel_button)
         buttons_row.addWidget(save_button)

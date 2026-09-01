@@ -2,19 +2,104 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import QEasingCurve, QPoint, QPropertyAnimation, Qt, QTimer
+from typing import Optional
+
+from PySide6.QtCore import QEasingCurve, QPoint, QPropertyAnimation, QRectF, Qt, QTimer
 from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import QGraphicsDropShadowEffect, QPushButton, QWidget
 
 
-class AnimatedButton(QPushButton):
-    """QPushButton com um leve efeito de "levantar" ao passar o mouse ou clicar.
+class RoundedButton(QPushButton):
+    """QPushButton com o fundo desenhado manualmente via QPainter.
 
-    A animação só translada a posição do botão — nunca redimensiona. Um botão
-    com border-radius grande no QSS (estilo "pílula") distorce visualmente se
-    a altura mudar mesmo um pouco: o raio (fixo em px) passa a valer mais que
-    metade da nova altura e o botão parece "virar uma bolinha". Por isso o
-    tamanho fica travado (`resize` uma única vez) e só a posição anima.
+    Nesta combinação de Qt/Windows, `border-radius` no QSS arredonda a BORDA
+    de QFrame/QComboBox corretamente, mas não recorta o `background-color` de
+    um QPushButton (confirmado testando cor de pixel nos cantos — o
+    preenchimento continua um retângulo reto mesmo com border-radius alto).
+    Para não depender dessa peculiaridade, o fundo arredondado é desenhado
+    aqui à mão; o QSS cuida só da cor do texto/padding via `setStyleSheet`
+    com fundo transparente.
+    """
+
+    def __init__(
+        self,
+        *args,
+        bg_color: str,
+        hover_color: Optional[str] = None,
+        pressed_color: Optional[str] = None,
+        disabled_color: str = "#12161d",
+        text_color: str = "white",
+        disabled_text_color: str = "#4a4f58",
+        radius: int = 999,
+        padding: str = "8px 16px",
+        font_size: int = 13,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self._bg = QColor(bg_color)
+        self._hover = QColor(hover_color) if hover_color else self._bg.lighter(122)
+        self._pressed = QColor(pressed_color) if pressed_color else self._bg.darker(125)
+        self._disabled = QColor(disabled_color)
+        self._radius = radius
+        self._hovering = False
+        self._pressing = False
+        self.toggled.connect(lambda _checked: self.update())
+
+        self.setCursor(Qt.PointingHandCursor)
+        self.setStyleSheet(
+            f"QPushButton {{ background: transparent; border: none; color: {text_color}; "
+            f"font-weight: 600; font-size: {font_size}px; padding: {padding}; }}"
+            f"QPushButton:disabled {{ color: {disabled_text_color}; }}"
+        )
+
+    def _current_color(self) -> QColor:
+        if not self.isEnabled():
+            return self._disabled
+        if self._pressing or (self.isCheckable() and self.isChecked()):
+            return self._pressed
+        if self._hovering:
+            return self._hover
+        return self._bg
+
+    def paintEvent(self, event) -> None:  # noqa: N802 (nome exigido pelo Qt)
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        rect = QRectF(self.rect())
+        radius = min(self._radius, rect.height() / 2)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(self._current_color())
+        painter.drawRoundedRect(rect, radius, radius)
+        painter.end()
+        super().paintEvent(event)
+
+    def enterEvent(self, event):
+        self._hovering = True
+        self.update()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self._hovering = False
+        self.update()
+        super().leaveEvent(event)
+
+    def mousePressEvent(self, event):
+        self._pressing = True
+        self.update()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self._pressing = False
+        self.update()
+        super().mouseReleaseEvent(event)
+
+
+class AnimatedButton(RoundedButton):
+    """RoundedButton com um leve efeito de "levantar" ao passar o mouse ou clicar.
+
+    A animação só translada a posição do botão — nunca redimensiona: mudar a
+    altura mudaria o raio efetivo do fundo desenhado em `RoundedButton`,
+    distorcendo o formato. Por isso o tamanho fica travado (`resize` uma
+    única vez) e só a posição anima.
 
     O brilho (sombra) é próprio do botão e só reage ao hover/clique — nada de
     animação de pulso contínua rodando em paralelo, que só competia com o

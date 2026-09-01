@@ -22,6 +22,12 @@ def main() -> None:
 
     app = QApplication(sys.argv)
     app.setApplicationName(APP_NAME)
+    # "Fusion" é o único estilo do Qt com suporte completo e consistente a
+    # QSS (border-radius, cores customizadas, etc.) em qualquer plataforma —
+    # os estilos nativos (Windows, GTK...) ignoram/limitam várias
+    # propriedades de stylesheet, causando cantos que não arredondam
+    # direito e aparência inconsistente entre Windows e Linux.
+    app.setStyle("Fusion")
 
     icon = QIcon(str(APP_ICON_PATH))
     app.setWindowIcon(icon)

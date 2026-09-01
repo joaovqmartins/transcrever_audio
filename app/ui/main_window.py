@@ -37,6 +37,7 @@ from app.config import (
     AUDIO_LOADED_ICON_PATH,
     COLOR_INDIGO,
     COLOR_MIST,
+    COLOR_PANEL,
     COLOR_STEEL,
     DEFAULT_MODEL_INDEX,
     LANGUAGE_OPTIONS,
@@ -46,7 +47,7 @@ from app.transcription.groq_engine import transcribe_audio
 from app.ui.icons import chevron_icon, copy_icon, lock_icon, save_icon, upload_pixmap
 from app.ui.settings_dialog import SettingsDialog
 from app.ui.style import STYLE_SHEET
-from app.ui.widgets import AnimatedButton, SpinnerWidget
+from app.ui.widgets import AnimatedButton, RoundedButton, SpinnerWidget
 from app.utils.audio import human_readable_size, is_supported_audio
 from app.utils.settings import load_api_key
 
@@ -287,8 +288,15 @@ class MainWindow(QMainWindow):
         root.addWidget(self.options_container)
 
         # -- ação principal (transcrever / status / progresso) ------------
-        self.transcribe_button = AnimatedButton("Transcrever", glow_color=COLOR_INDIGO)
-        self.transcribe_button.setObjectName("primaryButton")
+        self.transcribe_button = AnimatedButton(
+            "Transcrever",
+            glow_color=COLOR_INDIGO,
+            bg_color=COLOR_INDIGO,
+            hover_color="#7a7df3",
+            pressed_color="#4f52c1",
+            padding="11px 30px",
+            font_size=14,
+        )
         self.transcribe_button.setEnabled(False)
         self.transcribe_button.clicked.connect(self._start_transcription)
 
@@ -350,12 +358,16 @@ class MainWindow(QMainWindow):
 
         actions_row = QHBoxLayout()
         actions_row.addStretch()
-        self.copy_button = QPushButton(" Copiar")
+        self.copy_button = RoundedButton(
+            " Copiar", bg_color=COLOR_PANEL, hover_color="#1c2129", pressed_color=COLOR_INDIGO, radius=14
+        )
         self.copy_button.setIcon(copy_icon(COLOR_MIST))
         self.copy_button.setIconSize(QSize(15, 15))
         self.copy_button.setEnabled(False)
         self.copy_button.clicked.connect(self._copy_text)
-        self.save_button = QPushButton(" Salvar")
+        self.save_button = RoundedButton(
+            " Salvar", bg_color=COLOR_PANEL, hover_color="#1c2129", pressed_color=COLOR_INDIGO, radius=14
+        )
         self.save_button.setIcon(save_icon(COLOR_MIST))
         self.save_button.setIconSize(QSize(15, 15))
         self.save_button.setEnabled(False)
