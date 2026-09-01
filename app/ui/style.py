@@ -8,18 +8,18 @@ tema claro padrão do sistema — destoando do resto do app.
 
 from __future__ import annotations
 
-from app.config import COLOR_BLACK, COLOR_BROWN, COLOR_JET, COLOR_SMOKE, COLOR_TAUPE
+from app.config import COLOR_INDIGO, COLOR_INK, COLOR_MIST, COLOR_PANEL, COLOR_STEEL
 
 STYLE_SHEET = f"""
 QMainWindow, QDialog {{
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 {COLOR_BLACK}, stop:1 #14100c);
+        stop:0 {COLOR_INK}, stop:1 #10141b);
 }}
 QWidget#central {{
     background: transparent;
 }}
 QWidget {{
-    color: {COLOR_SMOKE};
+    color: {COLOR_MIST};
     font-family: 'Segoe UI', sans-serif;
 }}
 QLabel#appTitle {{
@@ -29,27 +29,27 @@ QLabel#appTitle {{
 }}
 QLabel#appSubtitle {{
     font-size: 12px;
-    color: {COLOR_TAUPE};
+    color: {COLOR_STEEL};
 }}
 QFrame#dropArea {{
-    border: 1px dashed rgba(169, 146, 125, 0.55);
-    border-radius: 14px;
-    background-color: rgba(169, 146, 125, 0.05);
+    border: 1px dashed rgba(139, 148, 158, 0.55);
+    border-radius: 20px;
+    background-color: rgba(139, 148, 158, 0.05);
 }}
 QFrame#dropArea:hover {{
-    background-color: rgba(169, 146, 125, 0.12);
+    background-color: rgba(139, 148, 158, 0.12);
 }}
 QFrame#dropArea[dragging="true"] {{
-    border-color: {COLOR_SMOKE};
-    background-color: rgba(242, 244, 243, 0.10);
+    border-color: {COLOR_INDIGO};
+    background-color: rgba(99, 102, 241, 0.12);
 }}
 QFrame#dropArea[hasFile="true"] {{
     border-style: solid;
-    border-color: {COLOR_SMOKE};
-    background-color: rgba(242, 244, 243, 0.05);
+    border-color: {COLOR_INDIGO};
+    background-color: rgba(99, 102, 241, 0.06);
 }}
 QFrame#dropArea:disabled {{
-    border-color: #3a352e;
+    border-color: #2a2f38;
 }}
 QLabel#dropIcon {{
     border: none;
@@ -63,7 +63,7 @@ QLabel#dropTitle {{
 }}
 QLabel#dropSubtitle {{
     font-size: 11px;
-    color: {COLOR_TAUPE};
+    color: {COLOR_STEEL};
     border: none;
     background: transparent;
 }}
@@ -74,81 +74,86 @@ QLabel#statusLabel {{
 QLabel#sectionTitle {{
     font-size: 12px;
     font-weight: 600;
-    color: {COLOR_TAUPE};
+    color: {COLOR_STEEL};
 }}
 QPushButton {{
-    background-color: {COLOR_TAUPE};
-    color: {COLOR_BLACK};
-    border: none;
-    border-radius: 9px;
+    background-color: {COLOR_PANEL};
+    color: {COLOR_MIST};
+    border: 1px solid rgba(139, 148, 158, 0.35);
+    border-radius: 14px;
     padding: 8px 16px;
     font-weight: 600;
 }}
 QPushButton:hover:!disabled {{
-    background-color: {COLOR_SMOKE};
+    background-color: #1c2129;
+    border-color: {COLOR_INDIGO};
 }}
 QPushButton:pressed:!disabled {{
-    background-color: {COLOR_BROWN};
-    color: {COLOR_SMOKE};
+    background-color: {COLOR_INDIGO};
+    border-color: {COLOR_INDIGO};
+    color: white;
 }}
 QPushButton:disabled {{
-    background-color: #2a2620;
-    color: #6b655a;
+    background-color: #12161d;
+    color: #4a4f58;
+    border-color: #22262e;
 }}
 QPushButton#primaryButton {{
-    background-color: {COLOR_BROWN};
-    color: {COLOR_SMOKE};
+    background-color: {COLOR_INDIGO};
+    color: white;
+    border: none;
     font-size: 14px;
     padding: 11px 30px;
-    border-radius: 22px;
+    border-radius: 24px;
 }}
 QPushButton#primaryButton:hover:!disabled {{
-    background-color: #968d82;
+    background-color: #7a7df3;
 }}
 QPushButton#primaryButton:pressed:!disabled {{
-    background-color: #423824;
+    background-color: #4f52c1;
 }}
 QPushButton#iconButton {{
     background-color: transparent;
     border: none;
-    color: {COLOR_SMOKE};
+    color: {COLOR_MIST};
     border-radius: 18px;
     padding: 0px;
 }}
 QPushButton#iconButton:hover:!disabled {{
-    background-color: rgba(242, 244, 243, 0.10);
+    background-color: rgba(230, 237, 243, 0.10);
 }}
 QPushButton#iconButton:pressed:!disabled {{
-    background-color: rgba(242, 244, 243, 0.18);
+    background-color: rgba(230, 237, 243, 0.18);
 }}
 QTextEdit, QLineEdit {{
-    background-color: {COLOR_BLACK};
-    border: 1px solid {COLOR_TAUPE};
-    border-radius: 10px;
-    padding: 10px;
+    background-color: {COLOR_INK};
+    border: 1px solid rgba(139, 148, 158, 0.5);
+    border-radius: 16px;
+    padding: 10px 14px;
     font-size: 13px;
 }}
-QLineEdit:focus {{
-    border-color: {COLOR_SMOKE};
+QLineEdit:focus, QTextEdit:focus {{
+    border-color: {COLOR_INDIGO};
 }}
 QComboBox {{
-    background-color: {COLOR_BLACK};
-    border: 1px solid {COLOR_TAUPE};
-    border-radius: 6px;
-    padding: 4px 8px;
+    background-color: {COLOR_INK};
+    border: 1px solid rgba(139, 148, 158, 0.5);
+    border-radius: 14px;
+    padding: 5px 10px;
 }}
 QComboBox:hover {{
-    border-color: {COLOR_SMOKE};
+    border-color: {COLOR_INDIGO};
 }}
 QComboBox::drop-down {{
     border: none;
 }}
 QComboBox QAbstractItemView {{
-    background-color: {COLOR_JET};
-    color: {COLOR_SMOKE};
-    border: 1px solid {COLOR_TAUPE};
+    background-color: {COLOR_PANEL};
+    color: {COLOR_MIST};
+    border: 1px solid rgba(139, 148, 158, 0.5);
+    border-radius: 10px;
     outline: none;
-    selection-background-color: {COLOR_BROWN};
-    selection-color: {COLOR_SMOKE};
+    selection-background-color: {COLOR_INDIGO};
+    selection-color: white;
 }}
 """

@@ -23,11 +23,11 @@ SETTINGS_FILE = SETTINGS_DIR / "settings.json"
 GROQ_API_KEYS_URL = "https://console.groq.com/keys"
 
 # Paleta de cores do aplicativo
-COLOR_BLACK = "#0a0908"  # fundo principal
-COLOR_JET = "#22333b"  # fundo dos cards/painéis
-COLOR_SMOKE = "#f2f4f3"  # texto principal / alto contraste / destaque
-COLOR_TAUPE = "#a9927d"  # elementos secundários / subtítulos / bordas
-COLOR_BROWN = "#5e503f"  # botão principal
+COLOR_INK = "#0d1117"  # fundo principal
+COLOR_PANEL = "#161b22"  # fundo de painéis/combos/popups
+COLOR_MIST = "#e6edf3"  # texto principal / alto contraste
+COLOR_STEEL = "#8b949e"  # elementos secundários / subtítulos / bordas
+COLOR_INDIGO = "#6366f1"  # botão principal / destaque
 
 
 @dataclass(frozen=True)

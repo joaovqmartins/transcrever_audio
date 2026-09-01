@@ -35,10 +35,9 @@ from app.config import (
     APP_NAME,
     APP_SUBTITLE,
     AUDIO_LOADED_ICON_PATH,
-    COLOR_BLACK,
-    COLOR_BROWN,
-    COLOR_SMOKE,
-    COLOR_TAUPE,
+    COLOR_INDIGO,
+    COLOR_MIST,
+    COLOR_STEEL,
     DEFAULT_MODEL_INDEX,
     LANGUAGE_OPTIONS,
     MODEL_OPTIONS,
@@ -105,7 +104,7 @@ class DropArea(QFrame):
         self.icon_label = QLabel()
         self.icon_label.setObjectName("dropIcon")
         self.icon_label.setAlignment(Qt.AlignCenter)
-        self.icon_label.setPixmap(upload_pixmap(COLOR_TAUPE, size=44))
+        self.icon_label.setPixmap(upload_pixmap(COLOR_STEEL, size=44))
 
         self.title_label = QLabel("Arraste seu áudio aqui")
         self.title_label.setObjectName("dropTitle")
@@ -133,7 +132,7 @@ class DropArea(QFrame):
                 pixmap.scaledToHeight(56, Qt.TransformationMode.SmoothTransformation)
             )
         else:
-            self.icon_label.setPixmap(upload_pixmap(COLOR_TAUPE, size=44))
+            self.icon_label.setPixmap(upload_pixmap(COLOR_STEEL, size=44))
 
         name = os.path.basename(path)
         elided = name if len(name) <= 42 else name[:39] + "..."
@@ -144,7 +143,7 @@ class DropArea(QFrame):
         self._play_icon_pop()
 
     def reset(self) -> None:
-        self.icon_label.setPixmap(upload_pixmap(COLOR_TAUPE, size=44))
+        self.icon_label.setPixmap(upload_pixmap(COLOR_STEEL, size=44))
         self.title_label.setText("Arraste seu áudio aqui")
         self.subtitle_label.setText("ou clique para selecionar (.mp3, .ogg)")
         self.setProperty("hasFile", False)
@@ -189,11 +188,9 @@ class DropArea(QFrame):
 
 
 _STATUS_COLORS = {
-    "info": COLOR_SMOKE,
-    "success": COLOR_TAUPE,
-    # Tom claro derivado do marrom (COLOR_BROWN) só para legibilidade em texto
-    # pequeno sobre o fundo quase-preto; o botão primário usa o marrom puro.
-    "error": "#c9a98f",
+    "info": COLOR_MIST,
+    "success": COLOR_STEEL,
+    "error": "#f87171",
 }
 
 
@@ -226,7 +223,7 @@ class MainWindow(QMainWindow):
         settings_row = QHBoxLayout()
         settings_row.addStretch()
         self.settings_button = QPushButton()
-        self.settings_button.setIcon(lock_icon(COLOR_SMOKE))
+        self.settings_button.setIcon(lock_icon(COLOR_MIST))
         self.settings_button.setIconSize(QSize(20, 20))
         self.settings_button.setObjectName("iconButton")
         self.settings_button.setToolTip("Configurações (chave de API)")
@@ -290,7 +287,7 @@ class MainWindow(QMainWindow):
         root.addWidget(self.options_container)
 
         # -- ação principal (transcrever / status / progresso) ------------
-        self.transcribe_button = AnimatedButton("Transcrever", glow_color=COLOR_BROWN)
+        self.transcribe_button = AnimatedButton("Transcrever", glow_color=COLOR_INDIGO)
         self.transcribe_button.setObjectName("primaryButton")
         self.transcribe_button.setEnabled(False)
         self.transcribe_button.clicked.connect(self._start_transcription)
@@ -301,7 +298,7 @@ class MainWindow(QMainWindow):
         status_row.setAlignment(Qt.AlignCenter)
         status_row.setSpacing(8)
 
-        self.spinner = SpinnerWidget(COLOR_TAUPE)
+        self.spinner = SpinnerWidget(COLOR_STEEL)
         self.spinner.hide()
         status_row.addWidget(self.spinner)
 
@@ -335,7 +332,7 @@ class MainWindow(QMainWindow):
         result_title_row.addStretch()
 
         self.expand_button = QPushButton()
-        self.expand_button.setIcon(chevron_icon(COLOR_SMOKE, "down"))
+        self.expand_button.setIcon(chevron_icon(COLOR_MIST, "down"))
         self.expand_button.setIconSize(QSize(16, 16))
         self.expand_button.setObjectName("iconButton")
         self.expand_button.setToolTip("Expandir a área de transcrição")
@@ -354,12 +351,12 @@ class MainWindow(QMainWindow):
         actions_row = QHBoxLayout()
         actions_row.addStretch()
         self.copy_button = QPushButton(" Copiar")
-        self.copy_button.setIcon(copy_icon(COLOR_BLACK))
+        self.copy_button.setIcon(copy_icon(COLOR_MIST))
         self.copy_button.setIconSize(QSize(15, 15))
         self.copy_button.setEnabled(False)
         self.copy_button.clicked.connect(self._copy_text)
         self.save_button = QPushButton(" Salvar")
-        self.save_button.setIcon(save_icon(COLOR_BLACK))
+        self.save_button.setIcon(save_icon(COLOR_MIST))
         self.save_button.setIconSize(QSize(15, 15))
         self.save_button.setEnabled(False)
         self.save_button.clicked.connect(self._save_text)
@@ -398,7 +395,7 @@ class MainWindow(QMainWindow):
     def _set_status(self, text: str, kind: str = "info") -> None:
         self._status_base = text
         self._status_dot_count = 0
-        color = _STATUS_COLORS.get(kind, COLOR_SMOKE)
+        color = _STATUS_COLORS.get(kind, COLOR_MIST)
         self.status_label.setStyleSheet(f"color: {color};")
         self.status_label.setText(text)
 
@@ -413,7 +410,7 @@ class MainWindow(QMainWindow):
         self._status_base = ""
         self._status_dot_count = 0
         self.status_opacity.setOpacity(1.0)
-        self.status_label.setStyleSheet(f"color: {COLOR_SMOKE};")
+        self.status_label.setStyleSheet(f"color: {COLOR_MIST};")
         self.status_label.setText("")
 
     def _tick_status_dots(self) -> None:
@@ -477,10 +474,10 @@ class MainWindow(QMainWindow):
         self.options_container.setVisible(not self._expanded)
 
         if self._expanded:
-            self.expand_button.setIcon(chevron_icon(COLOR_SMOKE, "up"))
+            self.expand_button.setIcon(chevron_icon(COLOR_MIST, "up"))
             self.expand_button.setToolTip("Recolher a área de transcrição")
         else:
-            self.expand_button.setIcon(chevron_icon(COLOR_SMOKE, "down"))
+            self.expand_button.setIcon(chevron_icon(COLOR_MIST, "down"))
             self.expand_button.setToolTip("Expandir a área de transcrição")
 
     def _start_transcription(self) -> None:
