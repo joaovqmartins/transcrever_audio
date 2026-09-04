@@ -7,7 +7,7 @@ from typing import Optional
 APP_NAME = "Audio Transcriber"
 APP_SUBTITLE = "Transcrição de áudio na nuvem (Groq)"
 
-SUPPORTED_EXTENSIONS = (".mp3", ".ogg")
+SUPPORTED_EXTENSIONS = (".mp3", ".ogg", ".wav", ".m4a")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 APP_ICON_PATH = BASE_DIR / "assets" / "icons" / "app_icon.png"
