@@ -17,10 +17,11 @@ Groq**, que roda o modelo Whisper na nuvem com alta velocidade.
 4. [Instalar as dependências](#instalar-as-dependências)
 5. [Obter uma chave de API da Groq](#obter-uma-chave-de-api-da-groq)
 6. [Como executar](#como-executar)
-7. [Formatos suportados](#formatos-suportados)
-8. [Limites da API](#limites-da-api)
-9. [Escolhendo velocidade x precisão](#escolhendo-velocidade-x-precisão)
-10. [Solução de problemas](#solução-de-problemas)
+7. [Gerar um executável (.exe)](#gerar-um-executável-exe)
+8. [Formatos suportados](#formatos-suportados)
+9. [Limites da API](#limites-da-api)
+10. [Escolhendo velocidade x precisão](#escolhendo-velocidade-x-precisão)
+11. [Solução de problemas](#solução-de-problemas)
 
 ## O que é o projeto
 
@@ -33,7 +34,9 @@ Estrutura do projeto:
 ```text
 transcrever_audio/
 ├── main.py                        # ponto de entrada
-├── requirements.txt
+├── requirements.txt                # dependências de runtime
+├── requirements-dev.txt            # + ferramentas de build (PyInstaller)
+├── build.spec                      # config do PyInstaller (gerar o .exe)
 ├── README.md
 │
 ├── app/
@@ -48,7 +51,7 @@ transcrever_audio/
 │       └── settings.py            # persistência local da chave de API
 │
 └── assets/
-    └── icons/
+    └── icons/                     # ícones do app (inclui o .ico do executável)
 ```
 
 ## Requisitos
@@ -194,6 +197,47 @@ Fluxo de uso:
 4. Clique em **Transcrever**.
 5. Acompanhe o status ("Enviando áudio...", "Transcrevendo...", etc.).
 6. Copie ou salve o texto transcrito em `.txt`.
+
+## Gerar um executável (.exe)
+
+Se você não quer instalar Python nem lidar com ambiente virtual, pode gerar
+um executável único do app com o [PyInstaller](https://pyinstaller.org/).
+Isso é útil principalmente para **distribuir o app para outra pessoa** — ela
+só baixa o arquivo e clica duas vezes, sem instalar nada.
+
+1. Com o ambiente virtual ativado, instale as ferramentas de build (além das
+   dependências normais):
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+2. Gere o executável:
+
+```bash
+pyinstaller build.spec
+```
+
+3. O resultado fica em `dist/AudioTranscriber.exe` (Windows) ou
+   `dist/AudioTranscriber` (Linux/macOS). Esse arquivo é standalone — pode
+   ser copiado e executado em outra máquina do mesmo sistema operacional sem
+   precisar de Python instalado lá.
+
+**Observações:**
+
+* O build precisa ser feito **no mesmo sistema operacional** do
+  computador onde o executável vai rodar — o PyInstaller não faz
+  cross-compile (um `.exe` gerado no Windows não roda no Linux, e
+  vice-versa).
+* O executável fica relativamente grande (~55 MB), porque empacota o
+  próprio Python e todas as dependências (PySide6, etc.) juntos — não é um
+  instalador, é um único arquivo autocontido.
+* A chave de API da Groq continua sendo configurada normalmente pela
+  interface (ícone de cadeado) e salva no mesmo lugar de sempre — gerar o
+  executável não muda nada sobre isso.
+* `requirements-dev.txt` e `build.spec` são só para quem vai **gerar** o
+  executável (desenvolvimento); quem só vai **usar** o app baixando o
+  `.exe` pronto não precisa de nada disso.
 
 ## Formatos suportados
 
