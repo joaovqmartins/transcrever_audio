@@ -241,11 +241,15 @@ pyinstaller build.spec
 
 ## Formatos suportados
 
-Na primeira versão: **`.mp3`** e **`.ogg`**, enviados diretamente para a API
-(a própria Groq decodifica o áudio, não é necessário FFmpeg local). Adicionar
-outros formatos de entrada (ex.: `.wav`, `.m4a`) ou de exportação (`.srt`,
-`.vtt`, `.json`) no futuro é uma extensão pontual — a lógica de exportação já
-está separada da lógica de transcrição.
+De entrada: **`.mp3`**, **`.ogg`**, **`.wav`** e **`.m4a`**, enviados
+diretamente para a API (a própria Groq decodifica o áudio, não é necessário
+FFmpeg local). Para adicionar outro formato aceito pela Groq, basta incluir a
+extensão em `SUPPORTED_EXTENSIONS`, em [`app/config.py`](app/config.py) —
+nenhuma outra parte do código precisa mudar.
+
+Exportação de saída, por enquanto: só `.txt`. Formatos como `.srt`, `.vtt` ou
+`.json` (com timestamps por trecho) podem ser adicionados no futuro — a
+lógica de exportação já está separada da lógica de transcrição.
 
 ## Limites da API
 

@@ -42,6 +42,7 @@ from app.config import (
     DEFAULT_MODEL_INDEX,
     LANGUAGE_OPTIONS,
     MODEL_OPTIONS,
+    SUPPORTED_EXTENSIONS,
 )
 from app.transcription.groq_engine import transcribe_audio
 from app.ui.icons import chevron_icon, copy_icon, lock_icon, save_icon, upload_pixmap
@@ -49,6 +50,11 @@ from app.ui.settings_dialog import SettingsDialog
 from app.ui.style import STYLE_SHEET
 from app.ui.widgets import AnimatedButton, RoundedButton, SpinnerWidget
 from app.utils.audio import human_readable_size, is_supported_audio
+
+# Textos derivados de SUPPORTED_EXTENSIONS (fonte única) para não duplicar a
+# lista de formatos em vários lugares da UI.
+_FORMATS_LABEL = ", ".join(SUPPORTED_EXTENSIONS)
+_FORMATS_DIALOG_FILTER = "Áudio (" + " ".join(f"*{ext}" for ext in SUPPORTED_EXTENSIONS) + ")"
 from app.utils.settings import load_api_key
 
 
@@ -111,7 +117,7 @@ class DropArea(QFrame):
         self.title_label.setObjectName("dropTitle")
         self.title_label.setAlignment(Qt.AlignCenter)
 
-        self.subtitle_label = QLabel("ou clique para selecionar (.mp3, .ogg)")
+        self.subtitle_label = QLabel(f"ou clique para selecionar ({_FORMATS_LABEL})")
         self.subtitle_label.setObjectName("dropSubtitle")
         self.subtitle_label.setAlignment(Qt.AlignCenter)
 
@@ -146,7 +152,7 @@ class DropArea(QFrame):
     def reset(self) -> None:
         self.icon_label.setPixmap(upload_pixmap(COLOR_STEEL, size=44))
         self.title_label.setText("Arraste seu áudio aqui")
-        self.subtitle_label.setText("ou clique para selecionar (.mp3, .ogg)")
+        self.subtitle_label.setText(f"ou clique para selecionar ({_FORMATS_LABEL})")
         self.setProperty("hasFile", False)
         _repolish(self)
 
@@ -162,7 +168,7 @@ class DropArea(QFrame):
         if not self.isEnabled():
             return
         path, _ = QFileDialog.getOpenFileName(
-            self, "Selecionar arquivo de áudio", "", "Áudio (*.mp3 *.ogg)"
+            self, "Selecionar arquivo de áudio", "", _FORMATS_DIALOG_FILTER
         )
         if path:
             self.file_dropped.emit(path)
@@ -440,7 +446,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(
                 self,
                 "Formato não suportado",
-                "Por enquanto, apenas arquivos .mp3 e .ogg são suportados.",
+                f"Por enquanto, apenas arquivos {_FORMATS_LABEL} são suportados.",
             )
             return
         if not os.path.isfile(path):
