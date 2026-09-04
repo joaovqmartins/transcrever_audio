@@ -1,0 +1,6 @@
+-r requirements.txt
+
+# Ferramentas de build (gerar o executável) — não são necessárias para
+# rodar o app com "python main.py", só para empacotá-lo com PyInstaller.
+pyinstaller>=6.0
+pillow>=10.0
