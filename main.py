@@ -5,7 +5,7 @@ import sys
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 
-from app.config import APP_ICON_PATH, APP_NAME, COLOR_INDIGO, COLOR_INK, COLOR_MIST
+from app.config import APP_ICON_PATH, APP_NAME, COLOR_INK, COLOR_MIST
 from app.ui.main_window import MainWindow
 
 
@@ -63,16 +63,20 @@ def _force_dark_title_bar(window) -> None:
 
     # Cores exatas da nossa paleta em vez da cor de destaque do tema do
     # Windows (que varia de máquina pra máquina) — fundo igual ao resto do
-    # app, borda no nosso índigo, texto na cor clara padrão.
+    # app, texto na cor clara padrão.
     DWMWA_BORDER_COLOR = 34
     DWMWA_CAPTION_COLOR = 35
     DWMWA_TEXT_COLOR = 36
+    DWMWA_COLOR_NONE = 0xFFFFFFFE  # remove a borda de destaque colorida
+
+    color_value = ctypes.c_uint(DWMWA_COLOR_NONE)
+    dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, ctypes.byref(color_value), ctypes.sizeof(color_value))
+
     for attribute, hex_color in (
         (DWMWA_CAPTION_COLOR, COLOR_INK),
-        (DWMWA_BORDER_COLOR, COLOR_INDIGO),
         (DWMWA_TEXT_COLOR, COLOR_MIST),
     ):
-        color_value = ctypes.c_int(_hex_to_colorref(hex_color))
+        color_value = ctypes.c_uint(_hex_to_colorref(hex_color))
         dwmapi.DwmSetWindowAttribute(hwnd, attribute, ctypes.byref(color_value), ctypes.sizeof(color_value))
 
     # Força o Windows a recalcular/redesenhar a área não-cliente agora, em
