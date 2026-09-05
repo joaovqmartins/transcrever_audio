@@ -261,7 +261,7 @@ class MainWindow(QMainWindow):
         model_col.setSpacing(6)
         model_label = QLabel("Modelo")
         model_label.setObjectName("sectionTitle")
-        self.model_combo = RoundedComboBox()
+        self.model_combo = RoundedComboBox(popup_bg_color=COLOR_PANEL)
         for option in MODEL_OPTIONS:
             self.model_combo.addItem(option.label)
         self.model_combo.setCurrentIndex(DEFAULT_MODEL_INDEX)
@@ -273,7 +273,7 @@ class MainWindow(QMainWindow):
         lang_col.setSpacing(6)
         lang_label = QLabel("Idioma")
         lang_label.setObjectName("sectionTitle")
-        self.language_combo = RoundedComboBox()
+        self.language_combo = RoundedComboBox(popup_bg_color=COLOR_PANEL)
         for label, _code in LANGUAGE_OPTIONS:
             self.language_combo.addItem(label)
         lang_col.addWidget(lang_label)
