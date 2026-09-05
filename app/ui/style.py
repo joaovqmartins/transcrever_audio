@@ -156,4 +156,16 @@ QComboBox QAbstractItemView {{
     selection-background-color: {COLOR_INDIGO};
     selection-color: white;
 }}
+QComboBox QAbstractItemView::item {{
+    padding: 6px 10px 6px 8px;
+    border-left: 3px solid transparent;
+}}
+QComboBox QAbstractItemView::item:selected {{
+    background-color: rgba(99, 102, 241, 0.18);
+    color: {COLOR_MIST};
+    border-left: 3px solid {COLOR_INDIGO};
+}}
+QComboBox QAbstractItemView::item:hover {{
+    background-color: rgba(139, 148, 158, 0.12);
+}}
 """
