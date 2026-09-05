@@ -61,6 +61,15 @@ def _force_dark_title_bar(window) -> None:
         hwnd, DWMWA_SYSTEMBACKDROP_TYPE, ctypes.byref(backdrop_value), ctypes.sizeof(backdrop_value)
     )
 
+    # Desligar o Mica acima pode fazer o Windows parar de arredondar os
+    # cantos externos da janela automaticamente — força de volta explicitamente.
+    DWMWA_WINDOW_CORNER_PREFERENCE = 33
+    DWMWCP_ROUND = 2
+    corner_value = ctypes.c_int(DWMWCP_ROUND)
+    dwmapi.DwmSetWindowAttribute(
+        hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, ctypes.byref(corner_value), ctypes.sizeof(corner_value)
+    )
+
     # Cores exatas da nossa paleta em vez da cor de destaque do tema do
     # Windows (que varia de máquina pra máquina) — fundo igual ao resto do
     # app, texto na cor clara padrão.
