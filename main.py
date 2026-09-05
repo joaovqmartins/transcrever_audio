@@ -71,17 +71,16 @@ def _force_dark_title_bar(window) -> None:
     )
 
     # Cores exatas da nossa paleta em vez da cor de destaque do tema do
-    # Windows (que varia de máquina pra máquina) — fundo igual ao resto do
-    # app, texto na cor clara padrão.
+    # Windows (que varia de máquina pra máquina). A borda usa a MESMA cor do
+    # fundo (em vez do valor especial "sem borda", que nem sempre é
+    # respeitado igual em todo Windows) — assim ela sempre fica "invisível",
+    # mesclada com o resto da janela, independente da interpretação do SO.
     DWMWA_BORDER_COLOR = 34
     DWMWA_CAPTION_COLOR = 35
     DWMWA_TEXT_COLOR = 36
-    DWMWA_COLOR_NONE = 0xFFFFFFFE  # remove a borda de destaque colorida
-
-    color_value = ctypes.c_uint(DWMWA_COLOR_NONE)
-    dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, ctypes.byref(color_value), ctypes.sizeof(color_value))
 
     for attribute, hex_color in (
+        (DWMWA_BORDER_COLOR, COLOR_INK),
         (DWMWA_CAPTION_COLOR, COLOR_INK),
         (DWMWA_TEXT_COLOR, COLOR_MIST),
     ):
