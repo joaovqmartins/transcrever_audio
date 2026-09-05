@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from PySide6.QtCore import QEasingCurve, QPoint, QPropertyAnimation, QRectF, QSize, Qt, QTimer
+from PySide6.QtCore import QEasingCurve, QEvent, QPoint, QPropertyAnimation, QRectF, QSize, Qt, QTimer
 from PySide6.QtGui import QBitmap, QColor, QPainter, QPen, QRegion
 from PySide6.QtWidgets import QComboBox, QGraphicsDropShadowEffect, QPushButton, QWidget
 
@@ -41,9 +41,36 @@ class RoundedComboBox(QComboBox):
 
     POPUP_RADIUS = 10
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._popup_watched: Optional[QWidget] = None
+
     def showPopup(self) -> None:  # noqa: N802 (nome exigido pelo Qt)
         super().showPopup()
         popup = self.view().window()
+
+        # O tamanho do popup pode não estar 100% definido ainda no instante em
+        # que showPopup() retorna (varia entre chamada programática e clique
+        # real do usuário). Aplicamos a máscara já de cara, mas também
+        # observamos eventos de Resize/Show nessa janela pra reaplicar assim
+        # que o tamanho definitivo for conhecido.
+        if popup is not self._popup_watched:
+            popup.installEventFilter(self)
+            self._popup_watched = popup
+
+        self._apply_popup_mask(popup)
+
+    def eventFilter(self, watched, event):  # noqa: N802 (nome exigido pelo Qt)
+        if watched is self._popup_watched and event.type() in (
+            QEvent.Type.Resize,
+            QEvent.Type.Show,
+        ):
+            self._apply_popup_mask(watched)
+        return super().eventFilter(watched, event)
+
+    def _apply_popup_mask(self, popup: QWidget) -> None:
+        if popup.size().isEmpty():
+            return
         popup.setMask(_rounded_mask(popup.size(), self.POPUP_RADIUS))
 
 
