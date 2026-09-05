@@ -4,9 +4,47 @@ from __future__ import annotations
 
 from typing import Optional
 
-from PySide6.QtCore import QEasingCurve, QPoint, QPropertyAnimation, QRectF, Qt, QTimer
-from PySide6.QtGui import QColor, QPainter, QPen
-from PySide6.QtWidgets import QGraphicsDropShadowEffect, QPushButton, QWidget
+from PySide6.QtCore import QEasingCurve, QPoint, QPropertyAnimation, QRectF, QSize, Qt, QTimer
+from PySide6.QtGui import QBitmap, QColor, QPainter, QPen, QRegion
+from PySide6.QtWidgets import QComboBox, QGraphicsDropShadowEffect, QPushButton, QWidget
+
+
+def _rounded_mask(size: QSize, radius: float) -> QRegion:
+    """Máscara de janela com cantos arredondados.
+
+    Usado para o popup do QComboBox: por ser uma janela top-level própria,
+    `border-radius` no QSS não recorta o fundo dela (mesma peculiaridade dos
+    QPushButton — ver RoundedButton). Como não dá pra sobrescrever o
+    paintEvent do popup interno do combobox, a solução é recortar a forma da
+    janela de verdade com uma máscara. Máscaras de janela no Windows são
+    binárias (sem anti-aliasing de verdade), então o canto fica levemente
+    "serrilhado" se você olhar de perto/com zoom, mas no tamanho real da UI
+    fica com aparência de canto arredondado normal.
+    """
+    bitmap = QBitmap(size)
+    bitmap.fill(Qt.GlobalColor.color0)
+    painter = QPainter(bitmap)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    painter.setBrush(Qt.GlobalColor.color1)
+    painter.setPen(Qt.PenStyle.NoPen)
+    painter.drawRoundedRect(QRectF(0, 0, size.width(), size.height()), radius, radius)
+    painter.end()
+    return QRegion(bitmap)
+
+
+class RoundedComboBox(QComboBox):
+    """QComboBox cujo menu suspenso (popup) mantém os cantos arredondados.
+
+    O raio deve bater com o `border-radius` de `QComboBox QAbstractItemView`
+    em app/ui/style.py.
+    """
+
+    POPUP_RADIUS = 10
+
+    def showPopup(self) -> None:  # noqa: N802 (nome exigido pelo Qt)
+        super().showPopup()
+        popup = self.view().window()
+        popup.setMask(_rounded_mask(popup.size(), self.POPUP_RADIUS))
 
 
 class RoundedButton(QPushButton):

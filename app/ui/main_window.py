@@ -17,7 +17,6 @@ from PySide6.QtCore import (
 from PySide6.QtGui import QDragEnterEvent, QDropEvent, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
-    QComboBox,
     QFileDialog,
     QFrame,
     QGraphicsOpacityEffect,
@@ -47,7 +46,7 @@ from app.transcription.groq_engine import transcribe_audio
 from app.ui.icons import chevron_icon, copy_icon, lock_icon, save_icon, upload_pixmap
 from app.ui.settings_dialog import SettingsDialog
 from app.ui.style import STYLE_SHEET
-from app.ui.widgets import AnimatedButton, RoundedButton, SpinnerWidget
+from app.ui.widgets import AnimatedButton, RoundedButton, RoundedComboBox, SpinnerWidget
 from app.utils.audio import human_readable_size, is_supported_audio
 from app.utils.settings import load_api_key
 
@@ -262,7 +261,7 @@ class MainWindow(QMainWindow):
         model_col.setSpacing(6)
         model_label = QLabel("Modelo")
         model_label.setObjectName("sectionTitle")
-        self.model_combo = QComboBox()
+        self.model_combo = RoundedComboBox()
         for option in MODEL_OPTIONS:
             self.model_combo.addItem(option.label)
         self.model_combo.setCurrentIndex(DEFAULT_MODEL_INDEX)
@@ -274,7 +273,7 @@ class MainWindow(QMainWindow):
         lang_col.setSpacing(6)
         lang_label = QLabel("Idioma")
         lang_label.setObjectName("sectionTitle")
-        self.language_combo = QComboBox()
+        self.language_combo = RoundedComboBox()
         for label, _code in LANGUAGE_OPTIONS:
             self.language_combo.addItem(label)
         lang_col.addWidget(lang_label)
