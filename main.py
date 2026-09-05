@@ -101,8 +101,8 @@ def main() -> None:
     window = MainWindow()
     window.setWindowIcon(icon)
     window.resize(560, 780)
-    _force_dark_title_bar(window)
     window.show()
+    _force_dark_title_bar(window)
     sys.exit(app.exec())
 
 
